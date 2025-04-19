@@ -1,0 +1,57 @@
+version: "3.9"
+
+services:
+  whatsguard-api:
+    build: .
+    container_name: whatsguard-api
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app               # hot‑reload
+    depends_on:
+      - db
+      - redis
+    environment:
+      # Banco
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/whatsguard_db
+
+      # Evolution API v2
+      - WHATSAPP_APIKEY=8efc01c5-a066-47bc-b435-e5399838d6aa
+      - API_DOMAIN=https://apievo.corujagpt.ai
+      - INSTANCE_NAME=CorujaGPT
+      - APIEVOLUTION_SECRET=callback_token_seguro
+
+      # Redis para FSM
+      - REDIS_HOST=redis
+    command: >
+      bash -c "alembic upgrade head &&
+               uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload"
+
+  db:
+    image: ankane/pgvector
+    container_name: whatsguard-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: whatsguard_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ./infra/docker/init.sql:/docker-entrypoint-initdb.d/init.sql
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: whatsguard-redis
+    ports:
+      - "6379:6379"
+    restart: always
+
+volumes:
+  pg_data:
