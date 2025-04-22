@@ -1,15 +1,15 @@
-from datetime import datetime
+def obter_multiplicador_por_hora(hora: int) -> float:
+    if 0 <= hora < 6:
+        return 1.5
+    elif 6 <= hora < 12:
+        return 1.0
+    elif 12 <= hora < 18:
+        return 1.2
+    else:
+        return 1.4
 
-def calcular_preco(hora: int, avaliacao: float, demandas_pendentes: int) -> float:
-    multiplicador_hora = {
-        0: 2.0, 6: 1.5, 12: 1.0, 18: 1.2, 22: 1.8
-    }
-
-    multiplicador = 1.0
-    for h, m in sorted(multiplicador_hora.items(), reverse=True):
-        if hora >= h:
-            multiplicador = m
-            break
+def calcular_preco(hora: int, avaliacao: float, demandas_pendentes: int, detalhado: bool = False):
+    multiplicador = obter_multiplicador_por_hora(hora)
 
     if demandas_pendentes >= 7:
         demanda_bonus = 0.2
@@ -20,4 +20,16 @@ def calcular_preco(hora: int, avaliacao: float, demandas_pendentes: int) -> floa
 
     preco_base = 100.0
     preco = preco_base * (1 + (avaliacao / 10)) * multiplicador * (1 + demanda_bonus)
-    return round(preco, 2)
+    preco_final = round(preco, 2)
+
+    if detalhado:
+        return {
+            "preco_base": preco_base,
+            "avaliacao": avaliacao,
+            "hora": hora,
+            "multiplicador": multiplicador,
+            "demanda_bonus": demanda_bonus,
+            "preco_final": preco_final
+        }
+
+    return preco_final

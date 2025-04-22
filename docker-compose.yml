@@ -16,10 +16,10 @@ services:
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/whatsguard_db
 
       # Evolution API v2
-      - WHATSAPP_APIKEY=8efc01c5-a066-47bc-b435-e5399838d6aa
-      - API_DOMAIN=https://apievo.corujagpt.ai
+      - WHATSAPP_APIKEY=DB3F0D89E0BA-43A6-895E-48809EF55D02 
+      - API_DOMAIN=https://apievo2.corujagpt.ai
       - INSTANCE_NAME=CorujaGPT
-      - APIEVOLUTION_SECRET=callback_token_seguro
+      - APIEVOLUTION_SECRET=DB3F0D89E0BA-43A6-895E-48809EF55D02
 
       # Redis para FSM
       - REDIS_HOST=redis
